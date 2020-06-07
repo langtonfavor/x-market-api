@@ -1,14 +1,10 @@
 const User = require("../../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
 const { SECRET_KEY } = require("../../config");
-
 const { UserInputError } = require('apollo-server');
 
-const {
-  validateRegisterInput,
-  validateLoginInput
+const { validateRegisterInput,validateLoginInput
 } = require('../../utils/validate.js');
 
 module.exports = {
@@ -59,69 +55,27 @@ module.exports = {
 
       const token = jwt.sign(
         {
-          id: user.id,
+          userId: user.id,
           email: user.email,
         },
         SECRET_KEY,
         { expiresIn: "1h" }
       );
 
-      return {
-        ...user._doc,
-        id: user._id,
-        token,
-      };
+      return {userId: user.id, token: token, expiresIn: 1};
     },
 
     async register(
       _,
       { registerInput: { firstName, lastName, contact, email, password } },
-      
+
     ) {
-       const { valid, errors } = validateRegisterInput(
-        firstName,
-        lastName,
-        email,
-        password,
-        contact
-      );
-
-       if(email.trim() === '') {
-         throw new UserInputError('email cant be empty', {
-          errors: {
-            email: 'email cant be empty'
-          }
-        });
-       }
-
-       if(contact.trim() === '') {
-         throw new UserInputError('contact cant be empty', {
-          errors: {
-            contact: 'contact cant be empty'
-          }
-        });
-       }
-
-       if(firstName.trim() === '') {
-         throw new UserInputError('firstName cant be empty', {
-          errors: {
-            firstName: 'firstName cant be empty'
-          }
-        });
-       }
-
-       if(password.trim() === '') {
-         throw new UserInputError('password cant be empty', {
-          errors: {
-            password: 'password cant be empty'
-          }
-        });
-       }
+      const { errors, valid } = validateRegisterInput(firstName,lastName,contact,email, password);
 
       if (!valid) {
         throw new UserInputError('Errors', { errors });
       }
-      // TODO: Make sure user doesnt already exist
+
       const user = await User.findOne({ email });
       if (user) {
         throw new UserInputError('email is taken', {
