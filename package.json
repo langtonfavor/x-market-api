@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/hidjou/classsed-graphql-mern-apollo#readme",
   "dependencies": {
-    "apollo-server": "^2.14.0",
+    "apollo-server": "^2.25.4",
     "bcryptjs": "^2.4.3",
     "graphql": "^15.0.0",
     "jsonwebtoken": "^8.5.1",
